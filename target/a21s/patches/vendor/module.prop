@@ -1,0 +1,4 @@
+id=fstab
+name=fstab fix
+author=fdur25
+description=Replace ftsab with a working one.

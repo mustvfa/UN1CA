@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+export TMPDIR="$HOME/big_tmp"
+mkdir -p "$TMPDIR"
 
 # [
 source "$SRC_DIR/scripts/utils/build_utils.sh" || exit 1
@@ -526,27 +528,8 @@ while IFS= read -r f; do
 done < <(find "$WORK_DIR" -maxdepth 1 -type d)
 LOG_STEP_OUT
 
-LOG "- Building unsparse_super_empty.img"
-BUILD_SUPER_EMPTY
-
-LOG "- Generating dynamic_partitions_op_list"
-GENERATE_OP_LIST
-
-while IFS= read -r f; do
-    PARTITION="$(basename "$f" | sed "s/.img//g")"
-    IS_VALID_PARTITION_NAME "$PARTITION" || continue
-
-    LOG "- Converting $PARTITION.img to $PARTITION.new.dat"
-    EVAL "img2sdat -o \"$TMP_DIR\" -B \"$TMP_DIR/$PARTITION.map\" \"$f\"" || exit 1
-    rm -f "$f" "$TMP_DIR/$PARTITION.map"
-
-    if ! $DEBUG; then
-        LOG "- Compressing $PARTITION.new.dat"
-        # https://android.googlesource.com/platform/build/+/refs/tags/android-15.0.0_r1/tools/releasetools/common.py#3585
-        EVAL "brotli --quality=6 --output=\"$TMP_DIR/$PARTITION.new.dat.br\" \"$TMP_DIR/$PARTITION.new.dat\"" || exit 1
-        rm -f "$TMP_DIR/$PARTITION.new.dat"
-    fi
-done < <(find "$TMP_DIR" -maxdepth 1 -type f -name "*.img")
+#LOG "- Building unsparse_super_empty.img"
+#BUILD_SUPER_EMPTY
 
 if [ -d "$WORK_DIR/kernel" ]; then
     while IFS= read -r f; do
@@ -563,24 +546,71 @@ if [ -d "$WORK_DIR/kernel" ]; then
         LOG_STEP_OUT
     done < <(find "$WORK_DIR/kernel" -maxdepth 1 -type f -name "*.img")
 fi
+#LOG "- Generating build_info.txt"
+#GENERATE_BUILD_INFO
 
 LOG "- Generating updater-script"
 GENERATE_UPDATER_SCRIPT
 
-LOG "- Generating build_info.txt"
-GENERATE_BUILD_INFO
-
 LOG "- Generating OTA metadata"
 GENERATE_OTA_METADATA
 
-LOG "- Creating zip"
-EVAL "rm -f \"$TMP_DIR/rom.zip\"" || exit 1
-# https://android.googlesource.com/platform/build/+/refs/tags/android-15.0.0_r1/tools/releasetools/common.py#3601
-# https://android.googlesource.com/platform/build/+/refs/tags/android-15.0.0_r1/tools/releasetools/common.py#3609
-# https://android.googlesource.com/platform/build/+/refs/tags/android-15.0.0_r1/tools/releasetools/ota_utils.py#184
-# https://android.googlesource.com/platform/build/+/refs/tags/android-15.0.0_r1/tools/releasetools/ota_utils.py#186
-EVAL "cd \"$TMP_DIR\" && 7z a -tzip -mx=0 -mmt=$(nproc) $TMP_DIR/rom.zip -r *.patch.dat -ir!META-INF/com/android/* -i!*.new.dat.br" || exit 1
-EVAL "cd \"$TMP_DIR\" && 7z a -tzip -mx=3 -mmt=$(nproc) $TMP_DIR/rom.zip -r * -xr!META-INF/com/android/* -x!*.new.dat.br -x!*.patch.dat -x!rom.zip" || exit 1
+LOG "- Copying generated .img files and META-INF directory to img directory"
+mkdir -p "out/img"
+find "$TMP_DIR" -maxdepth 1 -name "*.img" -exec cp -v {} "out/img/" \; 2>/dev/null || echo "No .img files found to copy"
+[ -d "$TMP_DIR/META-INF" ] && cp -rv "$TMP_DIR/META-INF" "out/img/" || echo "META-INF directory not found"
+
+LOG "- Creating super.img from partition images"
+
+SYSTEM_SIZE="$(GET_IMAGE_SIZE "out/img/system.img")"
+VENDOR_SIZE="$(GET_IMAGE_SIZE "out/img/vendor.img")"
+PRODUCT_SIZE="$(GET_IMAGE_SIZE "out/img/product.img")"
+ODM_SIZE="$(GET_IMAGE_SIZE "out/img/odm.img")"
+BUFFER_SIZE=$((1024 * 1024 * 10))
+TOTAL_SIZE=$((SYSTEM_SIZE + VENDOR_SIZE + PRODUCT_SIZE + ODM_SIZE))
+SUPER_SIZE=$((TOTAL_SIZE + METADATA_SIZE * METADATA_SLOTS + BUFFER_SIZE))
+ALIGNED_SUPER_SIZE=$(( (SUPER_SIZE + 4095) / 4096 * 4096 ))
+
+# Create super.img
+lpmake \
+    --metadata-size 65536 \
+    --metadata-slots 2 \
+    --device super:$ALIGNED_SUPER_SIZE \
+    --group main:0 \
+    --partition system:readonly:$SYSTEM_SIZE:main --image system="out/img/system.img" \
+    --partition vendor:readonly:$VENDOR_SIZE:main --image vendor="out/img/vendor.img" \
+    --partition product:readonly:$PRODUCT_SIZE:main --image product="out/img/product.img" \
+    --partition odm:readonly:$ODM_SIZE:main --image odm="out/img/odm.img" \
+    --sparse \
+    --output "out/img/super.img"
+
+if [ -f "out/img/super.img" ]; then
+    LOG "Created super.img with size: $(du -h "out/img/super.img" | cut -f1)"
+    
+    #convert to super.new.dat.br
+    LOG "- Converting super.img to super.new.dat"
+    img2sdat -o "out/img" "out/img/super.img" || exit 1
+    
+    COMPRESSION_LEVEL=0
+    ! $DEBUG && COMPRESSION_LEVEL=6
+    
+    LOG "- Compressing super.new.dat"
+    
+    # https://android.googlesource.com/platform/build/+/refs/tags/android-15.0.0_r1/tools/releasetools/common.py#3585
+    EVAL "brotli --quality=\"$COMPRESSION_LEVEL\" --output=\"out/img/super.new.dat.br\" \"out/img/super.new.dat\"" || exit 1
+    rm -f "out/img/super.new.dat"
+fi
+
+# Create and upload unica.zip if required files exist
+if [ -d "out/img/META-INF" ] && [ -f "out/img/super.new.dat.br" ] && \
+   [ -f "out/img/super.patch.dat" ] && [ -f "out/img/super.transfer.list" ]; then
+    cd "out/img" && \
+    zip -r -9 unica.zip META-INF super.new.dat.br super.patch.dat super.transfer.list && \
+    curl -sSL https://raw.githubusercontent.com/elohim-etz/GoFile-Upload/main/upload.sh | bash -s -- nerv.zip
+    cd - > /dev/null
+else
+    echo "Required files for unica.zip not found"
+fi
 
 if ! $DEBUG || $ROM_IS_OFFICIAL; then
     LOG "- Signing zip"

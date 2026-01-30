@@ -608,7 +608,7 @@ if [ -d "out/img/META-INF" ] && [ -f "out/img/super.new.dat.br" ] && \
    [ -f "out/img/super.patch.dat" ] && [ -f "out/img/super.transfer.list" ]; then
     cd "out/img" && \
     zip -r -9 unica.zip META-INF super.new.dat.br super.patch.dat super.transfer.list && \
-    curl -sSL https://raw.githubusercontent.com/elohim-etz/GoFile-Upload/main/upload.sh | bash -s -- nerv.zip
+    curl -sSL https://raw.githubusercontent.com/elohim-etz/GoFile-Upload/main/upload.sh | bash -s -- unica.zip
     cd - > /dev/null
 else
     echo "Required files for unica.zip not found"

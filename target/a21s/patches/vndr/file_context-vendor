@@ -602,6 +602,11 @@
 /vendor/etc/wifi/mx140_t\.bin u:object_r:vendor_configs_file:s0
 /vendor/etc/wifi/mx140_t_wlan\.hcf u:object_r:vendor_configs_file:s0
 /vendor/etc/wifi/mx140_t_wlan_t\.hcf u:object_r:vendor_configs_file:s0
+/vendor/saiv u:object_r:vendor_file:s0
+/vendor/saiv/image_understanding u:object_r:vendor_snap_file:s0
+/vendor/saiv/image_understanding/db u:object_r:vendor_snap_file:s0
+/vendor/saiv/image_understanding/db/smartscan_rectifier u:object_r:vendor_snap_file:s0
+/vendor/saiv/image_understanding/db/smartscan_rectifier/deep_dewarp_cnn\.onnx u:object_r:vendor_snap_file:s0
 /vendor/etc/wifi/mx140_wlan\.hcf u:object_r:vendor_configs_file:s0
 /vendor/etc/wifi/mx140_wlan_sw\.hcf u:object_r:vendor_configs_file:s0
 /vendor/etc/wifi/mx140_wlan_t\.hcf u:object_r:vendor_configs_file:s0

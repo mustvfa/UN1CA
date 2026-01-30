@@ -1,14 +1,16 @@
-TARGET_FIRMWARE_PATH="$(cut -d "/" -f 1 -s <<< "$TARGET_FIRMWARE")_$(cut -d "/" -f 2 -s <<< "$TARGET_FIRMWARE")"
+# 1080x2340 devices
+TWOTHREE_TARGETS=""
+# 1080x2400 devices
+TWOFOUR_TARGETS="a21s"
 
-TARGET_SCREEN_RESOLUTION="$(printf "%d" "0x$(READ_BYTES_AT "$FW_DIR/$TARGET_FIRMWARE_PATH/system/system/media/bootsamsung.qmg" "6" "2")")"
-TARGET_SCREEN_RESOLUTION+="x"
-TARGET_SCREEN_RESOLUTION+="$(printf "%d" "0x$(READ_BYTES_AT "$FW_DIR/$TARGET_FIRMWARE_PATH/system/system/media/bootsamsung.qmg" "8" "2")")"
-
-if [ -d "$MODPATH/$TARGET_SCREEN_RESOLUTION" ]; then
-    LOG "- Adding 2024 boot animation blobs ($TARGET_SCREEN_RESOLUTION)"
-    EVAL "cp -a \"$MODPATH/$TARGET_SCREEN_RESOLUTION/\"* \"$WORK_DIR/system/system/media\""
+if grep -q -w "$TARGET_CODENAME" <<< "$TWOTHREE_TARGETS" ; then
+    LOG "- Adding 2024 boot animation blobs"
+    cp -a "$MODPATH/1080x2340/"* "$WORK_DIR/system/system/media"
+elif grep -q -w "$TARGET_CODENAME" <<< "$TWOFOUR_TARGETS"; then
+    LOG "- Adding 2024 boot animation blobs"
+    cp -a "$MODPATH/1080x2400/"* "$WORK_DIR/system/system/media"
 else
-    LOGW "No boot animation blobs available for $TARGET_SCREEN_RESOLUTION resolution. Skipping"
+    LOGW "Unknown boot animation resolution for \"$TARGET_CODENAME\". Skipping"
 fi
 
-unset TARGET_FIRMWARE_PATH TARGET_SCREEN_RESOLUTION
+unset TWOTHREE_TARGETS TWOFOUR_TARGETS

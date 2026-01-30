@@ -49,6 +49,7 @@ uwb_regulation_skip_prop
 ENTRIES+="
 perf_prop
 qb_id_prop
+attiqi_app
 "
 
 # [

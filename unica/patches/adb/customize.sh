@@ -1,8 +1,8 @@
 # Only enable on debug builds
-if ! $DEBUG; then
-    LOG "\033[0;33m! Non-debug build detected. Skipping\033[0m"
-    return 0
-fi
+#if ! $DEBUG; then
+ #  LOG "\033[0;33m! Non-debug build detected. Skipping\033[0m"
+  #  return 0
+#fi
 
 # Start adbd on boot
 # https://android.googlesource.com/platform/packages/modules/adb/+/refs/heads/main/docs/dev/how_adbd_starts.md

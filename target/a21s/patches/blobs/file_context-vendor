@@ -1,0 +1,5 @@
+/vendor/bin/hw/vendor\.samsung\.hardware\.vibrator-service u:object_r:hal_vibrator_default_exec:s0
+/vendor/etc/init/vendor\.samsung\.hardware\.vibrator-default\.rc u:object_r:vendor_configs_file:s0
+/vendor/etc/media_codecs_c2\.xml u:object_r:vendor_configs_file:s0
+/vendor/etc/vintf/manifest/vendor\.samsung\.hardware\.vibrator-default\.xml u:object_r:vendor_configs_file:s0
+/vendor/lib64/vendor\.samsung\.hardware\.vibrator-V5-ndk_platform\.so u:object_r:vendor_file:s0

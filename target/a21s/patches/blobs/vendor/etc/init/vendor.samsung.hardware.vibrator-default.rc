@@ -1,0 +1,6 @@
+# A21s stock init rc sets permissions for the sysfs controls present on this kernel.
+
+service sec-vibrator-aidl /vendor/bin/hw/vendor.samsung.hardware.vibrator-service
+    class hal
+    user system
+    group system

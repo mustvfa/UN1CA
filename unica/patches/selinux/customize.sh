@@ -45,6 +45,12 @@ hal_dsms_service
 uwb_regulation_skip_prop
 "
 
+# One UI 4.1 additions
+ENTRIES+="
+perf_prop
+qb_id_prop
+"
+
 # [
 GET_SYSTEM_EXT()
 {

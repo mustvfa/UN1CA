@@ -1,3 +1,8 @@
+LOG_STEP_IN "- Fixing setting wallpaper from gallery bug"
+DELETE_FROM_WORK_DIR "system" "system/lib64/libobjectcapture_jni.arcsoft.so"
+DELETE_FROM_WORK_DIR "system" "system/lib64/libobjectcapture.arcsoft.so"
+LOG_STEP_OUT
+
 LOG "-Disabling encryption"
 # Encryption
 LINE=$(sed -n "/^\/dev\/block\/by-name\/userdata/=" "$WORK_DIR/vendor/etc/fstab.exynos850")

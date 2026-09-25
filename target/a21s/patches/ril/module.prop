@@ -1,0 +1,4 @@
+id=ril
+name=RIL
+author=VikrantRuhela, furbanoramos21-testing
+description=Update RIL stack using A145F android 14 radio files.

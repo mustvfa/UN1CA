@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="config_defaultAppPredictionService" />
+    <string name="config_defaultAugmentedAutofillService" />
+    <string name="config_defaultContentCaptureService" />
+    <string name="config_defaultTextClassifierPackage" />
+    <string name="config_mainBuiltInDisplayCutout">M 0,0 H 50.28571428571429 V 38.85714285714286 H 0 V 0 Z @dp @left</string>
+    <string name="config_systemAudioIntelligence" />
+    <string name="config_systemUiIntelligence" />
+</resources>

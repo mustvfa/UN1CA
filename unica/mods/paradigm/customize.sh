@@ -81,7 +81,9 @@ fi
 
 # Set AI Version to 20253 (latest)
 SET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_COMMON_CONFIG_AI_VERSION" "20253"
+if [[ "$TARGET_CODENAME" != "a21s" ]]; then
 ADD_TO_WORK_DIR "pa2qxxx" "system" "system/app/SketchBook/SketchBook.apk" 0 0 644 "u:object_r:system_file:s0"
+fi
 
 # Media Context Analyzer
 LOG_STEP_IN "- Adding Media Context Analyzer feature"
@@ -101,6 +103,7 @@ LOG_STEP_OUT
 
 # Audio eraser
 # Requires SEC_PRODUCT_FEATURE_MMFW_SUPPORT_MEDIA_CONTEXT_ANALYZER
+if [[ "$TARGET_CODENAME" != "a21s" ]]; then
 LOG_STEP_IN "- Adding Audio eraser feature"
 ADD_TO_WORK_DIR "pa2qxxx" "system" "system/etc/audio_ae_intervals.conf" 0 0 644 "u:object_r:system_file:s0"
 ADD_TO_WORK_DIR "pa2qxxx" "system" "system/etc/fastScanner.tflite" 0 0 644 "u:object_r:system_file:s0"
@@ -115,6 +118,7 @@ ADD_TO_WORK_DIR "pa2qxxx" "system" "system/lib64/libtensorflowlite_gpu_delegate.
 ADD_TO_WORK_DIR "pa2qxxx" "system" "system/lib64/libveframework.videoeditor.samsung.so" 0 0 644 "u:object_r:system_lib_file:s0"
 SET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_AUDIO_CONFIG_MULTISOURCE_SEPARATOR" "{FastScanning_6, SourceSeparator_4, Version_1.3.0}"
 LOG_STEP_OUT
+fi
 
 # Now brief
 # Requires SEC_FLOATING_FEATURE_COMMON_CONFIG_AI_VERSION >= 20251
@@ -144,6 +148,7 @@ LOG_STEP_OUT
 
 # Semantic search
 # Requires SEC_FLOATING_FEATURE_COMMON_CONFIG_AI_VERSION >= 20251
+if [[ "$TARGET_CODENAME" != "a21s" ]]; then
 LOG_STEP_IN "- Adding Semantic search feature"
 ADD_TO_WORK_DIR "pa2qxxx" "system" \
     "system/etc/default-permissions/default-permissions-com.samsung.mediasearch.xml" 0 0 644 "u:object_r:system_file:s0"
@@ -173,6 +178,7 @@ SMALI_PATCH "system" "system/priv-app/SecSettingsIntelligence/SecSettingsIntelli
     > /dev/null
 SET_FLOATING_FEATURE_CONFIG "SEC_FLOATING_FEATURE_MSCH_SUPPORT_NLSEARCH" "TRUE"
 LOG_STEP_OUT
+fi
 
 # Game Booster
 LOG "- Downloading latest Game Booster app"

@@ -1,3 +1,4 @@
+if [[ "$TARGET_CODENAME" != "a21s" ]]; then
 if $DEBUG; then
     LOG "\033[0;33m! Debug build detected. Skipping\033[0m"
     return 0
@@ -91,3 +92,4 @@ APPLY_PATCH "system" "system/priv-app/wallpaper-res/wallpaper-res.apk" \
     "$MODPATH/wallpaper-res.apk/0001-Adjust-metadata-for-60fps-video-files.patch"
 
 unset -f ENCODE_MP4 COMPRESS_WEBP
+fi

@@ -1,5 +1,6 @@
 # Samsung Internet Browser
 # https://play.google.com/store/apps/details?id=com.sec.android.app.sbrowser
+if [[ "$TARGET_CODENAME" != "a21s" ]]; then
 LOG "- Downloading Samsung Internet app"
 DOWNLOAD_FILE "$(GET_GALAXY_STORE_DOWNLOAD_URL "com.sec.android.app.sbrowser")" \
     "$WORK_DIR/system/system/preload/SBrowser/SBrowser.apk"
@@ -19,3 +20,4 @@ while IFS= read -r i; do
         EVAL "echo \"$i\" >> \"$WORK_DIR/system/system/etc/vpl_apks_count_list.txt\""
     fi
 done <<< "$(find "$WORK_DIR/system/system/preload")"
+fi

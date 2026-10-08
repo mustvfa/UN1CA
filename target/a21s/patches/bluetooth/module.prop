@@ -1,0 +1,4 @@
+id=bluetooth
+name=Bluetooth
+author=mustvfa
+description=Adds S22 Bluetooth audio hal.

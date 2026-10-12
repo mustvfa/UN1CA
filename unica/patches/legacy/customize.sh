@@ -657,7 +657,7 @@ if ! grep -q "\"version\": \"4\." "$WORK_DIR/vendor/etc/midas/midas_config.json"
 fi
 
 # Upgrade Single Take models (pre-API 35)
-if [ "$TARGET_PLATFORM_SDK_VERSION" -lt "35" ]; then
+if [[ "$TARGET_CODENAME" != "a21s" ]] && [ "$TARGET_PLATFORM_SDK_VERSION" -lt "35" ]; then
     if [ ! -d "$WORK_DIR/vendor/etc/singletake/ClarityScorer" ]; then
         PATCHED=true
         if [ -d "$WORK_DIR/vendor/etc/singletake/aifilter" ]; then

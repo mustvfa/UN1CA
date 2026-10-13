@@ -17,3 +17,16 @@ DELETE_FROM_WORK_DIR "system" "system/priv-app/SingleTakeService"
 DELETE_FROM_WORK_DIR "system" "system/etc/default-permissions/default-permissions-com.samsung.android.singletake.service.xml"
 DELETE_FROM_WORK_DIR "system" "system/etc/permissions/privapp-permissions-com.samsung.android.singletake.service.xml"
 LOG_STEP_OUT
+
+LOG_STEP_IN "- Disabling AV1 decoders"
+{
+    echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>"
+    echo "<MediaCodecs>"
+    echo "    <Decoders>"
+    echo "        <MediaCodec name=\"c2.android.av1-dav1d.decoder\" type=\"video/av01\" update=\"true\" enabled=\"false\" />"
+    echo "        <MediaCodec name=\"c2.android.av1.decoder\" type=\"video/av01\" update=\"true\" enabled=\"false\" />"
+    echo "    </Decoders>"
+    echo "</MediaCodecs>"
+} > "$WORK_DIR/vendor/etc/media_codecs_c2.xml"
+SET_METADATA "vendor" "etc/media_codecs_c2.xml" 0 0 644 "u:object_r:vendor_configs_file:s0"
+LOG_STEP_OUT

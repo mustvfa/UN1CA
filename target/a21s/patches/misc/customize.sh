@@ -5,3 +5,8 @@ sed -i "${LINE}s/,fileencryption=ice//g" "$WORK_DIR/vendor/etc/fstab.exynos850"
 
 # ODE
 sed -i -e "/ODE/d" -e "/keydata/d" -e "/keyrefuge/d" "$WORK_DIR/vendor/etc/fstab.exynos850"
+
+LOG_STEP_IN "- Nuking objectcapture libs"
+DELETE_FROM_WORK_DIR "system" "system/lib64/libobjectcapture_jni.arcsoft.so"
+DELETE_FROM_WORK_DIR "system" "system/lib64/libobjectcapture.arcsoft.so"
+LOG_STEP_OUT
